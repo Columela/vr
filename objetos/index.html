@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>VR Objects Columela</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script>
+      AFRAME.registerComponent('object-switcher', {
+        schema: {
+          models: {type: 'array', default: ['alien-betis.glb', 'blue-fox.glb', 'boy-girl-snow.glb', 'dinosaur-with-soup.glb', 'dolphin-hat.glb']},
+          rotations: {type: 'array', default: ['0 90 0', '0 270 0', '0 270 0', '0 270 0', '0 90 0']}
+        },
+        init: function () {
+          this.currentIndex = 0; // Inicializa el índice del modelo actual
+          this.el.addEventListener('abuttondown', () => this.switchObject(true)); // Avanza al siguiente modelo
+          this.el.addEventListener('bbuttondown', () => this.switchObject(false)); // Retrocede al modelo anterior
+        },
+        switchObject: function (forward) {
+          if (forward) {
+            // Calcula el siguiente índice de forma cíclica para avanzar
+            this.currentIndex = (this.currentIndex + 1) % this.data.models.length;
+          } else {
+            // Calcula el índice anterior de forma cíclica para retroceder
+            this.currentIndex = (this.currentIndex - 1 + this.data.models.length) % this.data.models.length;
+          }
+          var model = document.querySelector('#switchable-model'); // Encuentra el elemento del modelo
+          var newModelUrl = this.data.models[this.currentIndex];
+          var newRotation = this.data.rotations[this.currentIndex];
+          console.log(`Changing model to: ${newModelUrl} with rotation: ${newRotation}`);
+          model.setAttribute('gltf-model', newModelUrl); // Cambia el modelo 3D
+          model.setAttribute('rotation', newRotation); // Cambia la rotación del modelo
+        }
+      });
+    </script>
+</head>
+<body>
+    <a-scene background="color: #ECECEC">
+        <a-assets>
+          <a-asset-item id="object1" src="alien-betis.glb"></a-asset-item>
+          <a-asset-item id="object2" src="blue-fox.glb"></a-asset-item>
+          <a-asset-item id="object3" src="boy-girl-snow.glb"></a-asset-item>
+          <a-asset-item id="object4" src="dinosaur-with-soup.glb"></a-asset-item>
+          <a-asset-item id="object5" src="dolphin-hat.glb"></a-asset-item>
+        </a-assets>
+
+        <a-entity oculus-touch-controls="hand: right" object-switcher></a-entity>
+        
+        <a-entity id="switchable-model" position="0 2 -1" rotation="0 90 0" gltf-model="#object1" modify-materials></a-entity>
+    </a-scene>
+</body>
+</html>
+
